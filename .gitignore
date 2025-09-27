@@ -1,0 +1,3 @@
+{
+  "gitignore_content": "__pycache__/\n.venv/"
+}

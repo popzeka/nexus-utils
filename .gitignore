@@ -1,3 +1,3 @@
 {
-  "gitignore_content": "__pycache__/\n.venv/\n.idea/\n.vscode/\n.env\nbuild/\ndist/\nsdist/\n.pytest_cache/\n.coverage\n*.egg-info/\nvenv/\n*.log\n.mypy_cache/\n.tox/\nhtmlcov/\n.DS_Store\n*.swp\n.ruff_cache/\n.ipynb_checkpoints/\nenv/\n*.pyc\n*.sqlite3\ninstance/\nsite/\nlocal_settings.py\n"
+  "gitignore_content": "__pycache__/\n.venv/\n.idea/\n.vscode/\n.env\nbuild/\ndist/\nsdist/\n.pytest_cache/\n.coverage\n*.egg-info/\nvenv/\n*.log\n.mypy_cache/\n.tox/\nhtmlcov/\n.DS_Store\nThumbs.db\n*.swp\n.ruff_cache/\n.ipynb_checkpoints/\nenv/\n*.pyc\n*.sqlite3\ninstance/\nsite/\nlocal_settings.py\nnode_modules/\n"
 }

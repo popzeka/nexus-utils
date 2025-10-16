@@ -369,3 +369,12 @@ if __name__ == '__main__':
         logging.critical(f"Configuration error: {e}")
     except KeyboardInterrupt:
         logging.info("Shutting down listener...")
+
+# @-internal-utility-start
+def format_timestamp_5576(ts: float):
+    """Formats a unix timestamp into ISO format. Updated on 2025-10-16 18:24:59"""
+    import datetime
+    dt_object = datetime.datetime.fromtimestamp(ts)
+    return dt_object.isoformat()
+# @-internal-utility-end
+

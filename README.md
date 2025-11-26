@@ -7,7 +7,15 @@ This project is a Python-based simulation of a critical component in a cross-cha
 Cross-chain bridges allow users to transfer assets or data between different blockchains. A common mechanism for asset bridging is the "lock-and-mint" or "lock-and-unlock" model:
 
 1.  **Lock**: A user deposits an asset (e.g., USDC) into a bridge contract on the source chain (e.g., Ethereum).
-2.  **Event Emission**: The source chain contract locks the asset and emits an event (e.g., `TokensLocked`) containing details of the deposit (recipient address, amount, destination chain ID).
+2.  **Event Emission**: The source chain contract locks the asset and emits an event (e.g., `TokensLocked`) containing details of the deposit. In Solidity, this event might look like:
+    ```solidity
+    event TokensLocked(
+        address indexed user,
+        address indexed recipient,
+        uint256 amount,
+        uint256 destinationChainId
+    );
+    ```
 3.  **Listening**: Off-chain services, often called relayers or oracles, listen for this specific event.
 4.  **Relay & Verification**: Upon detecting and verifying the event, the relayer submits a transaction to a corresponding bridge contract on the destination chain (e.g., Polygon).
 5.  **Mint/Unlock**: The destination contract verifies the relayer's message and mints or unlocks the equivalent amount of a pegged asset (e.g., USDC.e) to the user's specified recipient address.
@@ -61,16 +69,16 @@ This project utilizes a modular, class-based architecture to separate concerns, 
 6.  **Event Detection & Validation**:
     *   When a new event is found, its transaction hash is logged.
     *   A check is performed to see if the event has already been processed (using an in-memory set).
-    *   **Reorg Protection**: The script checks if enough blocks have been mined since the event's block (`BLOCK_CONFIRMATIONS`). If the event is too recent, it's skipped in the current cycle and will be re-evaluated later.
+    *   **Reorg Protection**: The script waits for a set number of blocks (`BLOCK_CONFIRMATIONS`) to be mined after the event's block. If the event is too recent, it's skipped in the current cycle and will be re-evaluated later.
     *   The event data is parsed and sent as a notification to the monitoring API via `StatusNotifier`.
 7.  **Transaction Relaying**:
     *   The parsed event data is passed to the `TransactionRelayer`.
     *   The relayer builds the `unlockTokens` function call for the destination contract.
     *   It fetches the current nonce for the relayer's address, constructs the full transaction payload, and signs it with the provided private key.
-    *   **NOTE**: In this simulation, the final step of broadcasting the transaction (`send_raw_transaction`) is commented out to allow the script to run without a funded wallet. Instead, it logs the would-be transaction hash.
+    *   **NOTE**: In this simulation, the final `send_raw_transaction` call is commented out. This allows the script to run without requiring a funded wallet while still demonstrating the transaction creation and signing process. Instead of being broadcast, the would-be transaction hash is logged.
 8.  **State Update**: If the relay transaction is successfully prepared (and, in a real scenario, broadcast), the source event's transaction hash is added to the `processed_txs` set to prevent replay attacks or duplicate processing.
 
-The main execution block in `bridge_event_listener.py` ties everything together:
+The main execution block in `bridge_event_listener.py` ties everything together, handling initialization and graceful shutdown:
 
 ```python
 # A simplified example of the main execution block
@@ -122,8 +130,8 @@ DEST_CHAIN_RPC_URL="https://polygon-mumbai.g.alchemy.com/v2/YOUR_ALCHEMY_API_KEY
 DEST_BRIDGE_ADDRESS="0x..."
 
 # --- Relayer Wallet Configuration ---
-# The private key of the account that will pay gas on the destination chain
-# IMPORTANT: Do NOT use a key with real funds. Use a fresh testnet account.
+# The private key of the account that will pay gas on the destination chain.
+# WARNING: Use a fresh testnet account. NEVER expose a private key with real funds.
 RELAYER_PRIVATE_KEY="0x..."
 # The public address corresponding to the private key above
 RELAYER_ADDRESS="0x..."

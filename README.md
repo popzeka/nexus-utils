@@ -1,6 +1,6 @@
 # nexus-utils: Cross-Chain Bridge Event Listener
 
-This project is a Python-based simulation of a critical component in a cross-chain bridging system: the Event Listener & Transaction Relayer. This script is designed to monitor events on a source blockchain (e.g., tokens being locked) and trigger corresponding actions on a destination blockchain (e.g., minting/unlocking equivalent tokens).
+This project is a Python-based simulation of a critical component in a cross-chain bridging system: an event listener and transaction relayer. This script is designed to monitor events on a source blockchain (e.g., tokens being locked) and trigger corresponding actions on a destination blockchain (e.g., minting/unlocking equivalent tokens).
 
 ## Concept
 
@@ -16,19 +16,19 @@ This script simulates steps 3 and 4, acting as the off-chain relayer responsible
 
 ## Code Architecture
 
-The script is designed with a modular, class-based architecture to separate concerns, enhance readability, and facilitate future extensions or testing. The `main.py` script acts as the orchestrator, initializing and running the core components.
+The script is designed with a modular, class-based architecture to separate concerns, enhance readability, and facilitate future extensions or testing. The `bridge_event_listener.py` script acts as the orchestrator, initializing and running the core components.
 
 ```
-+-----------------------+
-|         main.py       |
-| (Orchestrator)        |
-+-----------+-----------+
-            |
-            v
-+-----------+-----------+
-| BridgeEventListener   |
-| (Core Logic Loop)     |
-+-----------+-----------+
++----------------------------+
+| bridge_event_listener.py   |
+| (Orchestrator)             |
++-------------+--------------+
+              |
+              v
++-------------+--------------+
+|   BridgeEventListener      |
+|   (Core Logic Loop)        |
++-------------+--------------+
       |           |
       | uses      | uses
       v           v
@@ -89,7 +89,13 @@ pip install -r requirements.txt
 
 ### Configuration
 
-Create a `.env` file in the project's root directory. This file stores your sensitive configuration. Populate it with the following variables, replacing the placeholder values:
+Create a `.env` file in the project's root directory to store your sensitive configuration. You can copy the example file to get started:
+
+```bash
+cp .env.example .env
+```
+
+Then, populate `.env` with the following variables, replacing the placeholder values:
 
 ```ini
 # --- Source Chain (e.g., Ethereum Goerli) ---

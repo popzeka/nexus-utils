@@ -1,6 +1,6 @@
 # nexus-utils: Cross-Chain Bridge Event Listener
 
-This repository contains a Python-based simulation of a critical component in a cross-chain bridging system: the Event Listener & Transaction Relayer. This script is designed to monitor events on a source blockchain (e.g., tokens being locked) and trigger corresponding actions on a destination blockchain (e.g., minting/unlocking equivalent tokens).
+This project is a Python-based simulation of a critical component in a cross-chain bridging system: the Event Listener & Transaction Relayer. This script is designed to monitor events on a source blockchain (e.g., tokens being locked) and trigger corresponding actions on a destination blockchain (e.g., minting/unlocking equivalent tokens).
 
 ## Concept
 
@@ -12,11 +12,11 @@ Cross-chain bridges allow users to transfer assets or data between different blo
 4.  **Relay & Verification**: Upon detecting and verifying the event, the relayer submits a transaction to a corresponding bridge contract on the destination chain (e.g., Polygon).
 5.  **Mint/Unlock**: The destination contract verifies the relayer's message and mints or unlocks the equivalent amount of a pegged asset (e.g., USDC.e) to the user's specified recipient address.
 
-This script simulates steps 3 and 4, acting as the off-chain relayer responsible for ensuring the integrity and liveness of the bridge.
+This script simulates steps 3 and 4, acting as the off-chain relayer responsible for ensuring the liveness and integrity of the bridge.
 
 ## Code Architecture
 
-The script is designed with a modular, class-based architecture to separate concerns, enhance readability, and facilitate future extensions or testing.
+The script is designed with a modular, class-based architecture to separate concerns, enhance readability, and facilitate future extensions or testing. The `main.py` script acts as the orchestrator, initializing and running the core components.
 
 ```
 +-----------------------+
@@ -49,9 +49,9 @@ The script is designed with a modular, class-based architecture to separate conc
 *   **`BlockchainConnector`**: A reusable class responsible for establishing and maintaining a connection to a blockchain node via its RPC endpoint using the `web3.py` library. It handles connection checks and middleware injection (e.g., for PoA chains).
 *   **`StatusNotifier`**: A utility class for sending status updates to an external monitoring service or API. It uses the `requests` library to post JSON payloads, allowing for external logging and alerting on the relayer's health and actions.
 *   **`TransactionRelayer`**: This class encapsulates the logic for creating, signing, and broadcasting a transaction on the destination chain. It manages the relayer's nonce, calculates gas, and uses the private key to sign the transaction that will unlock/mint tokens for the user.
-*   **`BridgeEventListener`**: The main orchestrator. It initializes all other components, sets up an event filter on the source bridge contract, and runs an infinite loop to poll for new events. When an event is detected, it validates it, handles confirmation delays (to protect against block reorgs), and invokes the `TransactionRelayer` to perform the cross-chain action.
+*   **`BridgeEventListener`**: The core orchestrator class. It initializes all other components, sets up an event filter on the source bridge contract, and runs an infinite loop to poll for new events. When an event is detected, it validates it, handles confirmation delays (to protect against block reorgs), and invokes the `TransactionRelayer` to perform the cross-chain action.
 
-## How it Works
+## How It Works
 
 1.  **Initialization**: The script starts by loading and validating configuration from the `.env` file.
 2.  **Connection**: It establishes connections to both the source and destination chain RPC nodes using the `BlockchainConnector`.
@@ -70,14 +70,14 @@ The script is designed with a modular, class-based architecture to separate conc
     *   **NOTE**: In this simulation, the final step of broadcasting the transaction (`send_raw_transaction`) is commented out to allow the script to run without a funded wallet. Instead, it logs the would-be transaction hash.
 8.  **State Update**: If the relay transaction is successfully prepared (and, in a real scenario, broadcast), the source event's transaction hash is added to the `processed_txs` set to prevent replay attacks or duplicate processing.
 
-## Usage Example
+## Usage
 
-### 1. Prerequisites
+### Prerequisites
 
 *   Python 3.8+
 *   Access to RPC endpoints for two EVM-compatible blockchains (e.g., from Infura, Alchemy, or a local node).
 
-### 2. Installation
+### Installation
 
 Clone the repository and install the required dependencies:
 
@@ -87,9 +87,9 @@ cd nexus-utils
 pip install -r requirements.txt
 ```
 
-### 3. Configuration
+### Configuration
 
-Create a file named `.env` in the root directory of the project. This file will store your sensitive configuration. Populate it with the following variables:
+Create a `.env` file in the project's root directory. This file stores your sensitive configuration. Populate it with the following variables, replacing the placeholder values:
 
 ```ini
 # --- Source Chain (e.g., Ethereum Goerli) ---
@@ -118,9 +118,9 @@ BLOCK_CONFIRMATIONS=7
 
 **Note:** You will need to replace the placeholder addresses (`0x...`) with the actual contract addresses for the bridge you are interacting with.
 
-### 4. Running the Script
+### Running the Script
 
-Execute the script from your terminal:
+Once the `.env` file is configured, execute the script from your terminal:
 
 ```bash
 python bridge_event_listener.py

@@ -16,7 +16,7 @@ This script simulates steps 3 and 4, acting as the off-chain relayer responsible
 
 ## Code Architecture
 
-The script is designed with a modular, class-based architecture to separate concerns, enhance readability, and facilitate future extensions or testing. The `bridge_event_listener.py` script acts as the orchestrator, initializing and running the core components.
+This project utilizes a modular, class-based architecture to separate concerns, enhance readability, and facilitate future extensions or testing. The `bridge_event_listener.py` script acts as the orchestrator, initializing and running the core components.
 
 ```
 +----------------------------+
@@ -70,6 +70,19 @@ The script is designed with a modular, class-based architecture to separate conc
     *   **NOTE**: In this simulation, the final step of broadcasting the transaction (`send_raw_transaction`) is commented out to allow the script to run without a funded wallet. Instead, it logs the would-be transaction hash.
 8.  **State Update**: If the relay transaction is successfully prepared (and, in a real scenario, broadcast), the source event's transaction hash is added to the `processed_txs` set to prevent replay attacks or duplicate processing.
 
+The main execution block in `bridge_event_listener.py` ties everything together:
+
+```python
+# A simplified example of the main execution block
+if __name__ == "__main__":
+    try:
+        listener = BridgeEventListener()
+        listener.run()
+    except Exception as e:
+        # Use a basic logger in case the main logger fails
+        print(f"FATAL: A critical error occurred: {e}")
+```
+
 ## Usage
 
 ### Prerequisites
@@ -89,15 +102,15 @@ pip install -r requirements.txt
 
 ### Configuration
 
-Create a `.env` file in the project's root directory to store your sensitive configuration. You can copy the example file to get started:
+Create a `.env` file in the project's root directory to store your configuration and secrets. You can copy the example file to get started:
 
 ```bash
 cp .env.example .env
 ```
 
-Then, populate `.env` with the following variables, replacing the placeholder values:
+Then, populate the `.env` file with your specific values:
 
-```ini
+```dotenv
 # --- Source Chain (e.g., Ethereum Goerli) ---
 SOURCE_CHAIN_RPC_URL="https://goerli.infura.io/v3/YOUR_INFURA_PROJECT_ID"
 # Address of the bridge contract that locks tokens
@@ -110,7 +123,7 @@ DEST_BRIDGE_ADDRESS="0x..."
 
 # --- Relayer Wallet Configuration ---
 # The private key of the account that will pay gas on the destination chain
-# IMPORTANT: Do NOT use a key with real funds for this simulation. Use a fresh testnet account.
+# IMPORTANT: Do NOT use a key with real funds. Use a fresh testnet account.
 RELAYER_PRIVATE_KEY="0x..."
 # The public address corresponding to the private key above
 RELAYER_ADDRESS="0x..."
